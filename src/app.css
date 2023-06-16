@@ -1,0 +1,20 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+* {
+	font-family: 'Inter', sans-serif;
+	outline: none;
+}
+
+body {
+	min-height: 100vh;
+	background: #32353b;
+}
+
+img.emoji {
+	width: 20px;
+	display: inline;
+	position: static;
+	margin-right: 3px;
+}

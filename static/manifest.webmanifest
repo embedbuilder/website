@@ -1,0 +1,32 @@
+{
+	"short_name": "EmbedBuilder",
+	"name": "EmbedBuilder.com",
+	"icons": [
+		{
+			"src": "/images/icons-vector.svg",
+			"type": "image/svg+xml",
+			"sizes": "512x512"
+		},
+		{
+			"src": "/images/icons-192.png",
+			"type": "image/png",
+			"sizes": "192x192"
+		},
+		{
+			"src": "/images/icons-512.png",
+			"type": "image/png",
+			"sizes": "512x512"
+		},
+		{
+			"src": "/images/maskable-192.png",
+			"type": "image/png",
+			"sizes": "192x192",
+			"purpose": "any maskable"
+		}
+	],
+	"id": "/?source=pwa",
+	"start_url": "/?source=pwa",
+	"theme_color": "#5a65ea",
+	"background_color": "#32353b",
+	"display": "standalone"
+}

@@ -1,0 +1,35 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Embed {
+  id                Int       @id @unique @default(autoincrement()) @map("id")
+  code              String    @unique @map("code")
+  authorImageUrl    String?   @map("author_image_url")
+  authorName        String?   @map("author_name")
+  authorUrl         String?   @map("author_url")
+  title             String?   @map("title")
+  titleUrl          String?   @map("title_url")
+  description       String?   @map("description")
+  thumbnailImageUrl String?   @map("thumbnail_image_url")
+  fields            Json[]    @default([]) @map("fields")
+  imageUrl          String?   @map("image_url")
+  footerIconUrl     String?   @map("footer_icon_url")
+  footerText        String?   @map("footer_text")
+  timestamp         DateTime? @map("timestamp")
+  color             Int?      @map("color")
+  ip                String?   @map("ip")
+  createdAt         DateTime  @default(now()) @map("created_at")
+  updatedAt         DateTime  @updatedAt @map("updated_at")
+  deletedAt         DateTime? @map("deleted_at")
+
+  @@map("embeds")
+}
