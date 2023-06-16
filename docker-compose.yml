@@ -2,7 +2,7 @@ version: '3.3'
 
 services:
   frontend:
-    image: 'ghcr.io/embedbuilder-com/website:main'
+    image: 'ghcr.io/embedbuilder/website:main'
     restart: unless-stopped
     networks:
       - embedbuilder
