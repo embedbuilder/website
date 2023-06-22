@@ -11,6 +11,7 @@
 	import currentEmbed from '$lib/stores/currentEmbed';
 	import settings from '$lib/stores/settings';
 	import type { AppEmbed } from '$lib/types';
+	import { faGithub } from '@fortawesome/free-brands-svg-icons';
 	import { faCopy } from '@fortawesome/free-solid-svg-icons';
 	import Fa from 'svelte-fa';
 
@@ -54,7 +55,15 @@
 	<div class="grid grid-cols-1 lg:grid-cols-2 pt-5 gap-x-8 gap-y-12 pb-10">
 		<div class=" animate__animated animate__backInLeft">
 			<div class="pl-5 pr-5 flex flex-col gap-y-8">
-				<h1 class="-mb-4 text-white text-2xl font-bold">EmbedBuilder for Discord</h1>
+				<a
+					class="-mb-4 text-white hover:text-gray-400 duration-200 text-2xl font-bold flex flex-row items-center"
+					href="https://github.com/embedbuilder/website"
+					target="_blank"
+					rel="noreferer"
+				>
+					<Fa icon={faGithub} class="mr-3" />
+					EmbedBuilder for Discord
+				</a>
 				<div class="-mb-2">
 					<ul class="text-gray-400">
 						<li>You can edit most of the items inline by double clicking the preview.</li>
