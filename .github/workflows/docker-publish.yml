@@ -4,16 +4,13 @@ on:
   push:
     branches:
       - main
-      - development
     paths-ignore:
-      - '.github/**'
       - '**/*.md'
       - '**/*.gitignore'
       - '**/*.gitattributes'
   pull_request:
     branches:
       - main
-      - development
   workflow_dispatch:
 
 env:
@@ -51,4 +48,15 @@ jobs:
           context: .
           push: ${{ github.event_name != 'pull_request' }}
           tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
+          labels: ${{ steps.meta.outputs.labels }}   
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy stack
+        if: github.event_name != 'pull_request'
+        shell: bash
+        run: |
+          curl ${{ secrets.DEPLOY_WEBHOOK_URL }} \
+            --request POST \
+            --location \
