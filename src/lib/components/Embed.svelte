@@ -4,7 +4,9 @@
 	import type { AppEmbed } from '$lib/types';
 	import Escape from 'escape-html';
 
-	export let embed: AppEmbed = {};
+	export let embed: AppEmbed = {
+		fields: []
+	};
 
 	if (!embed.color) embed.color = '#FFFFFF';
 

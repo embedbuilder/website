@@ -6,7 +6,7 @@ export interface AppEmbed {
 	titleUrl?: string;
 	description?: string;
 	thumbnailImageUrl?: string;
-	fields?: { id: string; name: string; value: string; inline?: boolean }[];
+	fields: { id: string; name: string; value: string; inline?: boolean }[];
 	imageUrl?: string;
 	footerIconUrl?: string;
 	footerText?: string;

@@ -19,7 +19,9 @@
 	let WEBHOOK_URL_REGEX =
 		/^https:\/\/((canary|ptb)\.)?discord.com\/api(\/v\d+)?\/webhooks\/(\d+)\/([\w-]+)$/;
 
-	let embed: AppEmbed = {};
+	let embed: AppEmbed = {
+		fields: []
+	};
 
 	$: if ($settings.exportFramework)
 		exportedCode = new EmbedExporter(embed)[$settings.exportFramework]();
@@ -96,8 +98,8 @@
 				</div>
 				<div class="flex flex-col gap-y-6">
 					<p class="uppercase text-[#B9BBBE] font-medium">Fields</p>
-					{#if (embed.fields?.length ?? 0) > 0}
-						{#each embed.fields ?? [] as field}
+					{#if embed.fields.length > 0}
+						{#each embed.fields as field}
 							<div class="flex flex-row items-center w-full relative">
 								<button
 									title="Delete this field"
@@ -126,10 +128,15 @@
 									class="w-full grid grid-cols-1 mb-5 md:mb-0 xl:grid-cols-10 gap-x-10 relative -mt-2"
 								>
 									<div class="xl:col-span-4">
-										<FormInput height={44} maxLength={256} label="Name" value={field.name} />
+										<FormInput height={44} maxLength={256} label="Name" bind:value={field.name} />
 									</div>
 									<div class="xl:col-span-4">
-										<FormInput height={44} maxLength={1024} label="Value" value={field.value} />
+										<FormInput
+											height={44}
+											maxLength={1024}
+											label="Value"
+											bind:value={field.value}
+										/>
 									</div>
 									<div class="flex flex-row items-center h-full mt-2.5 xl:col-span-2">
 										<Checkbox label="Inline" bind:value={field.inline} />
@@ -266,8 +273,12 @@
 					</div>
 				</div>
 				<div class="grid grid-cols-1 md:grid-cols-2 2xl:grid-cols-4 gap-x-4 gap-y-4 2xl:gap-y-6">
-					<button class="discord-btn btn-danger w-full md:w-auto" on:click={() => (embed = {})}
-						>Clear Embed</button
+					<button
+						class="discord-btn btn-danger w-full md:w-auto"
+						on:click={() =>
+							(embed = {
+								fields: []
+							})}>Clear Embed</button
 					>
 					<button
 						on:click={async () => {
