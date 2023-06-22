@@ -35,8 +35,15 @@ const schema = joi.object({
 	color: joi.number().optional().min(0x000000).max(0xffffff)
 });
 
-export const GET = async ({ params }) => {
-	const embed = await prisma.embed.findFirst({ where: { code: params.code, deletedAt: null } });
+export const GET = (async ({ params }) => {
+	const embed = await prisma.embed.findFirst({
+		where: {
+			code: params.code,
+			AND: {
+				deletedAt: null
+			}
+		}
+	});
 	if (!embed) return new Response(JSON.stringify({ error: 'Embed not found' }), { status: 404 });
 	return new Response(
 		JSON.stringify({
@@ -68,7 +75,7 @@ export const GET = async ({ params }) => {
 			}
 		}
 	);
-};
+}) satisfies RequestHandler;
 
 export const POST = (async ({ request }) => {
 	const json = await request.json();

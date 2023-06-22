@@ -1,43 +1,33 @@
 <script lang="ts">
 	import { browser } from '$app/environment';
 	import { goto } from '$app/navigation';
-	import '$lib/css/DiscordComponents/Buttons.css';
+	import Checkbox from '$lib/components/Checkbox.svelte';
+	import DiscordBanner from '$lib/components/DiscordBanner.svelte';
+	import Embed from '$lib/components/Embed.svelte';
+	import FormInput from '$lib/components/FormInput.svelte';
 	import EmbedExporter from '$lib/functions/EmbedExporter.js';
-	import { generateUid } from '$lib/functions/Misc.js';
+	import { b64ToUtf8, generateUid, utf8ToB64 } from '$lib/functions/Utility.js';
+	import currentWebhook from '$lib/stores/WebhookData';
+	import settings from '$lib/stores/settings';
+	import type { AppEmbed } from '$lib/types';
 	import { faCopy } from '@fortawesome/free-solid-svg-icons';
 	import Fa from 'svelte-fa';
-	import Checkbox from '../components/Checkbox.svelte';
-	import DiscordBanner from '../components/DiscordBanner.svelte';
-	import Embed from '../components/Embed.svelte';
-	import FormInput from '../components/FormInput.svelte';
-	import Modal from '../components/Modal.svelte';
-	import currentWebhook from '../lib/stores/WebhookData';
-	import currentEmbed from '../lib/stores/currentEmbed';
-	import settings from '../lib/stores/settings';
-	import type { AppEmbed } from '../lib/types';
 
 	let exportedCode = '';
 
 	let WEBHOOK_URL_REGEX =
 		/^https:\/\/((canary|ptb)\.)?discord.com\/api(\/v\d+)?\/webhooks\/(\d+)\/([\w-]+)$/;
 
-	const utf8ToB64 = (s: string) => btoa(encodeURIComponent(s));
-	const b64ToUtf8 = (s: string) => decodeURIComponent(atob(s));
+	let embed: AppEmbed = {};
 
-	currentEmbed.subscribe((embed) => {
-		exportedCode = (new EmbedExporter(embed) as any)[$settings?.exportFramework as any]();
-	});
+	$: if ($settings.exportFramework)
+		exportedCode = new EmbedExporter(embed)[$settings.exportFramework]();
 
-	settings.subscribe((settings) => {
-		exportedCode = new EmbedExporter($currentEmbed as AppEmbed)[settings.exportFramework]();
-	});
-
-	if (browser) {
+	$: if (browser) {
 		try {
 			const searchParams = new URLSearchParams(window.location.href.split('?')[1]);
 			if (searchParams.has('e')) {
-				const embed = JSON.parse(b64ToUtf8(searchParams.get('e') as string));
-				currentEmbed.set(embed);
+				embed = JSON.parse(b64ToUtf8(searchParams.get('e') as string));
 			}
 		} catch (e) {
 			alert('Invalid embed code providen in URL');
@@ -45,11 +35,8 @@
 		}
 	}
 
-	let showSaveInBrowserModal = false;
-	$: if (browser && currentEmbed) {
-		const url = `${location.protocol}//${location.host}/?e=${utf8ToB64(
-			JSON.stringify($currentEmbed)
-		)}`;
+	$: if (browser && embed) {
+		const url = `${location.protocol}//${location.host}/?e=${utf8ToB64(JSON.stringify(embed))}`;
 		window.history.replaceState({}, '', url);
 	}
 </script>
@@ -71,78 +58,45 @@
 					<FormInput
 						maxLength={256}
 						height={44}
-						value={$currentEmbed?.authorName}
-						onUpdate={(n) => ($currentEmbed.authorName = n)}
+						bind:value={embed.authorName}
 						label="Author Name"
 					/>
 					<div class="grid grid-cols-1 md:grid-cols-2 gap-x-10">
+						<FormInput maxLength={0} height={44} bind:value={embed.authorUrl} label="Author Url" />
 						<FormInput
 							maxLength={0}
 							height={44}
-							value={$currentEmbed?.authorUrl}
-							onUpdate={(n) => ($currentEmbed.authorUrl = n)}
-							label="Author Url"
-						/>
-						<FormInput
-							maxLength={0}
-							height={44}
-							value={$currentEmbed?.authorImageUrl}
-							onUpdate={(n) => ($currentEmbed.authorImageUrl = n)}
+							bind:value={embed.authorImageUrl}
 							label="Author Image Url"
 						/>
 					</div>
 				</div>
 				<div>
 					<p class="uppercase text-[#B9BBBE] font-medium mb-2">General</p>
-					<FormInput
-						maxLength={256}
-						value={$currentEmbed?.title}
-						label="Title"
-						onUpdate={(n) => ($currentEmbed.title = n)}
-					/>
-					<FormInput
-						maxLength={256}
-						value={$currentEmbed?.titleUrl}
-						height={44}
-						label="Title Url"
-						onUpdate={(n) => ($currentEmbed.titleUrl = n)}
-					/>
-					<FormInput
-						maxLength={4096}
-						value={$currentEmbed?.description}
-						label="Description"
-						onUpdate={(n) => ($currentEmbed.description = n)}
-					/>
+					<FormInput maxLength={256} bind:value={embed.title} label="Title" />
+					<FormInput maxLength={256} bind:value={embed.titleUrl} height={44} label="Title Url" />
+					<FormInput maxLength={4096} bind:value={embed.description} label="Description" />
 				</div>
 				<div>
 					<p class="uppercase text-[#B9BBBE] font-medium mb-2">Images</p>
 					<FormInput
 						maxLength={0}
 						height={44}
-						value={$currentEmbed?.thumbnailImageUrl}
-						onUpdate={(n) => ($currentEmbed.thumbnailImageUrl = n)}
+						bind:value={embed.thumbnailImageUrl}
 						label="Thumbnail Image Url"
 					/>
-					<FormInput
-						maxLength={0}
-						height={44}
-						value={$currentEmbed?.imageUrl}
-						onUpdate={(n) => ($currentEmbed.imageUrl = n)}
-						label="Image Url"
-					/>
+					<FormInput maxLength={0} height={44} bind:value={embed.imageUrl} label="Image Url" />
 				</div>
 				<div class="flex flex-col gap-y-6">
 					<p class="uppercase text-[#B9BBBE] font-medium">Fields</p>
-					{#if ($currentEmbed?.fields?.length ?? 0) > 0}
-						{#each $currentEmbed?.fields ?? [] as field}
+					{#if (embed.fields?.length ?? 0) > 0}
+						{#each embed.fields ?? [] as field}
 							<div class="flex flex-row items-center w-full relative">
 								<button
 									title="Delete this field"
 									class="-mb-10 hidden xl:block mr-5 hover:opacity-70 duration-200 absolute xl:relative right-0 bottom-4"
 									on:click={() =>
-										($currentEmbed.fields = ($currentEmbed.fields ?? []).filter(
-											(f) => f.id !== field.id
-										))}
+										(embed.fields = (embed.fields ?? []).filter((f) => f.id !== field.id))}
 								>
 									<svg
 										width="18"
@@ -165,37 +119,19 @@
 									class="w-full grid grid-cols-1 mb-5 md:mb-0 xl:grid-cols-10 gap-x-10 relative -mt-2"
 								>
 									<div class="xl:col-span-4">
-										<FormInput
-											height={44}
-											maxLength={256}
-											label="Name"
-											value={field.name}
-											onUpdate={(n) => (field.name = n)}
-										/>
+										<FormInput height={44} maxLength={256} label="Name" value={field.name} />
 									</div>
 									<div class="xl:col-span-4">
-										<FormInput
-											height={44}
-											maxLength={1024}
-											label="Value"
-											value={field.value}
-											onUpdate={(n) => (field.value = n)}
-										/>
+										<FormInput height={44} maxLength={1024} label="Value" value={field.value} />
 									</div>
 									<div class="flex flex-row items-center h-full mt-2.5 xl:col-span-2">
-										<Checkbox
-											label="Inline"
-											value={field.inline}
-											onUpdate={(n) => (field.inline = n)}
-										/>
+										<Checkbox label="Inline" bind:value={field.inline} />
 
 										<button
 											title="Delete this field"
 											class="ml-auto xl:hidden"
 											on:click={() =>
-												($currentEmbed.fields = ($currentEmbed.fields ?? []).filter(
-													(f) => f.id !== field.id
-												))}
+												(embed.fields = (embed.fields ?? []).filter((f) => f.id !== field.id))}
 										>
 											<svg
 												width="18"
@@ -224,9 +160,9 @@
 					<div>
 						<button
 							class="discord-btn btn-primary"
-							disabled={($currentEmbed?.fields?.length ?? 0) > 25}
+							disabled={(embed?.fields?.length ?? 0) > 25}
 							on:click={() =>
-								($currentEmbed.fields = ($currentEmbed.fields ?? []).concat({
+								(embed.fields = (embed.fields ?? []).concat({
 									id: generateUid(),
 									name: '',
 									value: '',
@@ -241,15 +177,13 @@
 						<FormInput
 							maxLength={2048}
 							height={44}
-							value={$currentEmbed?.footerText}
-							onUpdate={(n) => ($currentEmbed.footerText = n)}
+							bind:value={embed.footerText}
 							label="Footer Text"
 						/>
 						<FormInput
 							maxLength={0}
 							height={44}
-							value={$currentEmbed?.footerIconUrl}
-							onUpdate={(n) => ($currentEmbed.footerIconUrl = n)}
+							bind:value={embed.footerIconUrl}
 							label="Footer Icon Url"
 						/>
 					</div>
@@ -260,10 +194,10 @@
 						<input
 							type="datetime-local"
 							id="ts"
-							value={$currentEmbed?.timestamp}
+							bind:value={embed.timestamp}
 							on:change={(e) => {
 								// @ts-ignore
-								$currentEmbed.timestamp = e.target?.value;
+								embed.timestamp = e.target?.value;
 							}}
 							class="w-full h-[45px] rounded-md bg-[#202225] border border-solid border-[#35353b] text-gray-300 px-3 outline-none"
 						/>
@@ -319,28 +253,20 @@
 								style="white-space: pre; border-radius: 0 0 3px 3px; font-family: 'Consolas', monospace;"
 								class="codebox p-4 pb-16 overflow-y-none overflow-x-scroll w-full text-white outline-none resize-none bg-[#202225]"
 							>
-								{@html exportedCode}
+								{exportedCode}
 							</div>
 						</div>
 					</div>
 				</div>
 				<div class="grid grid-cols-1 md:grid-cols-2 2xl:grid-cols-4 gap-x-4 gap-y-4 2xl:gap-y-6">
-					<button
-						class="discord-btn btn-danger w-full md:w-auto"
-						on:click={() => currentEmbed.set({})}>Clear Embed</button
+					<button class="discord-btn btn-danger w-full md:w-auto" on:click={() => (embed = {})}
+						>Clear Embed</button
 					>
-					<!--<button
-						on:click={() => (showSaveInBrowserModal = true)}
-						class="discord-btn btn-success w-full md:w-auto">Save in Browser</button
-					>
-					<button class="discord-btn btn-secondary w-full md:w-auto"
-						>Load from previously saved</button
-					> -->
 					<button
 						on:click={async () => {
 							const response = await fetch('/api/v1/shorturl', {
 								method: 'POST',
-								body: JSON.stringify(new EmbedExporter($currentEmbed).toJSON())
+								body: JSON.stringify(new EmbedExporter(embed).toJSON())
 							});
 							const { code, error } = await response.json();
 							if (!code) return alert(error);
@@ -372,7 +298,6 @@
 							maxLength={4096}
 							height={44}
 							value={$currentWebhook?.content}
-							onUpdate={(n) => ($currentWebhook.content = n)}
 							label="Message Content"
 						/>
 					</div>
@@ -381,14 +306,12 @@
 							maxLength={32}
 							height={44}
 							value={$currentWebhook?.username}
-							onUpdate={(n) => ($currentWebhook.username = n)}
 							label="Author Name"
 						/>
 						<FormInput
 							maxLength={0}
 							height={44}
 							value={$currentWebhook?.avatarUrl}
-							onUpdate={(n) => ($currentWebhook.avatarUrl = n)}
 							label="Author Avatar Url"
 						/>
 					</div>
@@ -398,7 +321,7 @@
 							const result = await fetch($currentWebhook.url, {
 								method: 'POST',
 								body: JSON.stringify({
-									embeds: [new EmbedExporter($currentEmbed).toDiscordJSON()],
+									embeds: [new EmbedExporter(embed).toDiscordJSON()],
 									username:
 										($currentWebhook?.username?.length ?? 0) > 0
 											? $currentWebhook?.username
@@ -426,7 +349,7 @@
 						id="firewebhook"
 						disabled={!(
 							WEBHOOK_URL_REGEX.test($currentWebhook?.url ?? '') &&
-							Object.entries($currentEmbed).filter(
+							Object.entries(embed).filter(
 								([k, v]) =>
 									['authorName', 'title', 'description', 'fields'].includes(k) && v.length > 0
 							).length > 0
@@ -439,33 +362,12 @@
 		<div class="lg:relative">
 			<div class="lg:fixed lg:h-cx1 lg:w-[50vw] top-[88px] lg:overflow-y-scroll">
 				<div class="flex justify-center">
-					<Embed />
+					<Embed bind:embed />
 				</div>
 			</div>
 		</div>
 	</div>
 </div>
-
-{#if showSaveInBrowserModal}
-	<Modal
-		onClose={() => (showSaveInBrowserModal = false)}
-		label="Save in Browser"
-		formInputFields={[{ label: 'Label' }]}
-		onSubmit={(values) => {
-			const label = values[0].value ?? '';
-			const embed = JSON.stringify($currentEmbed);
-			const storedEmbeds = localStorage.getItem('embeds')
-				? JSON.parse(localStorage.getItem('embeds') ?? '[]')
-				: [];
-			storedEmbeds.push({
-				label: label.length > 0 ? label : `Untitled Embed (${storedEmbeds.length + 1})`,
-				embed
-			});
-			localStorage.setItem('embeds', JSON.stringify(storedEmbeds));
-			showSaveInBrowserModal = false;
-		}}
-	/>
-{/if}
 
 <DiscordBanner />
 

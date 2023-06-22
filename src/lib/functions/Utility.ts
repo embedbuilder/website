@@ -14,6 +14,9 @@ export const humanizeDate = (date: Date) => {
 
 export const generateUid = () => Math.random().toString(36).slice(2, 10);
 
-export const renderEmojis = (isBrowser: any) => {
+export const renderEmojis = () => {
 	if (browser) eval("twemoji.parse(document.body, { ext: '.svg', size: 'svg' });");
 };
+
+export const utf8ToB64 = (s: string) => btoa(encodeURIComponent(s));
+export const b64ToUtf8 = (s: string) => decodeURIComponent(atob(s));

@@ -6,7 +6,7 @@
 
 	onMount(() => {
 		window.addEventListener('beforeinstallprompt', (e) => {
-      console.log('beforeinstallprompt Event fired');
+			console.log('beforeinstallprompt Event fired');
 		});
 	});
 </script>

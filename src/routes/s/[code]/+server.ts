@@ -9,7 +9,9 @@ export const GET = (async ({ params }) => {
 	const dbEmbed = await prisma.embed.findFirst({
 		where: {
 			code,
-			deletedAt: null
+			AND: {
+				deletedAt: null
+			}
 		}
 	});
 	if (!dbEmbed) throw redirect(307, '/');

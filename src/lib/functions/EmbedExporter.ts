@@ -25,12 +25,16 @@ export default class EmbedExporter {
 	}
 
 	private cleanString(str: string) {
-		return str
-			.replace(/'/g, "\\'")
-			.replace(/"/g, '\\"')
-			.replace(/\n/g, '\\n')
-			.replace(/>/g, '&#62;')
-			.replace(/</g, '&#60;');
+		const replacers = {
+			"'": "\\'",
+			'"': '\\"',
+			'\n': '\\n'
+		};
+
+		return str.replace(
+			new RegExp(Object.keys(replacers).join('|'), 'g'),
+			(match) => (replacers as any)[match]
+		);
 	}
 
 	private exportVariables(): string[] {
@@ -127,7 +131,7 @@ export default class EmbedExporter {
 		if (this.color)
 			lines.push(this.indent(1) + `.setColor(0x${this.cleanString(this.color).slice(1)})`);
 		lines[lines.length - 1] += ';';
-		return lines.join('<br />');
+		return lines.join('\n');
 	}
 
 	public discordPy() {
@@ -168,7 +172,7 @@ export default class EmbedExporter {
 				lines.push(temp3 + ')');
 			}
 		}
-		return lines.join('<br />');
+		return lines.join('\n');
 	}
 
 	public jda() {
@@ -204,7 +208,7 @@ export default class EmbedExporter {
 				});`
 			);
 		if (this.timestamp) lines.push(`eb.setTimestamp(${this.formatStringJava(this.timestamp, v)});`);
-		return lines.join('<br />');
+		return lines.join('\n');
 	}
 
 	public json() {
