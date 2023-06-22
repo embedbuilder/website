@@ -8,6 +8,7 @@
 	import EmbedExporter from '$lib/functions/EmbedExporter.js';
 	import { b64ToUtf8, generateUid, utf8ToB64 } from '$lib/functions/Utility.js';
 	import currentWebhook from '$lib/stores/WebhookData';
+	import currentEmbed from '$lib/stores/currentEmbed';
 	import settings from '$lib/stores/settings';
 	import type { AppEmbed } from '$lib/types';
 	import { faCopy } from '@fortawesome/free-solid-svg-icons';
@@ -39,6 +40,12 @@
 		const url = `${location.protocol}//${location.host}/?e=${utf8ToB64(JSON.stringify(embed))}`;
 		window.history.replaceState({}, '', url);
 	}
+
+	if ($currentEmbed && !Object.keys(embed).length) {
+		embed = $currentEmbed;
+	}
+
+	$: currentEmbed.set(embed);
 </script>
 
 <div class="flex flex-col pb-20">

@@ -20,7 +20,6 @@
 		"animate.css": "^4.1.1",
 		"autoprefixer": "^10.4.13",
 		"axios": "1.2.2",
-		"dompurify": "^3.0.3",
 		"eslint": "^8.30.0",
 		"eslint-config-prettier": "^8.5.0",
 		"eslint-plugin-svelte3": "^4.0.0",
@@ -45,6 +44,8 @@
 		"@fortawesome/free-solid-svg-icons": "^6.4.0",
 		"@prisma/client": "^4.15.0",
 		"@sveltejs/adapter-node": "^1.2.4",
+		"@types/escape-html": "^1.0.2",
+		"escape-html": "^1.0.3",
 		"joi": "^17.9.2",
 		"prisma": "^4.15.0",
 		"svelte-fa": "^3.0.4"

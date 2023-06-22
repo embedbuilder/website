@@ -2,16 +2,14 @@
 	import { EMOJI_REGEX } from '$lib/functions/EmojiValidator';
 	import { humanizeDate } from '$lib/functions/Utility.js';
 	import type { AppEmbed } from '$lib/types';
-	import DOMPurify from 'dompurify';
+	import Escape from 'escape-html';
 
 	export let embed: AppEmbed = {};
 
 	if (!embed.color) embed.color = '#FFFFFF';
 
 	const applyMarkdown = (str: string, onlyEmojis = false) => {
-		str = DOMPurify.sanitize(str, {
-			ALLOWED_TAGS: []
-		});
+		str = Escape(str);
 
 		str = str
 			.replace(EMOJI_REGEX, (_) => {
@@ -19,11 +17,11 @@
 				return `<img alt="Emoji" class="emoji" src="/emojis/${fileName}.svg" />`;
 			})
 			.replace(
-				/<a:\w+:(\d+)>/g,
+				/\&lt\;a:\w+:(\d+)\&gt\;/g,
 				'<img alt="Emoji" class="emoji" src="https://cdn.discordapp.com/emojis/$1.gif?size=96&quality=lossless" />'
 			)
 			.replace(
-				/<:\w+:(\d+)>/g,
+				/\&lt\;:\w+:(\d+)\&gt\;/g,
 				'<img alt="Emoji" class="emoji" src="https://cdn.discordapp.com/emojis/$1.webp?size=96&quality=lossless" />'
 			);
 		if (onlyEmojis) return str;
@@ -34,8 +32,7 @@
 			.replace(/\*([^*]+)\*/g, '<i>$1</i>')
 			.replace(/_([^_]+)_/g, '<u>$1</u>')
 			.replace(/~~([^~]+)~~/g, '<strike>$1</strike>')
-			.replace(/`([^`]+)`/g, '<code>$1</code>')
-			.replace(/```\n([^`]+)\n```/g, '<pre>$1</pre>');
+			.replace(/`([^`]+)`/g, '<code>$1</code>');
 	};
 
 	let editingFields: string[] = [];
