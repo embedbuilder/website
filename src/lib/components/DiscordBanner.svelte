@@ -1,12 +1,18 @@
 <script>
+	import dissmissableContents from '$lib/stores/dissmissableContents';
 	import { faBullhorn, faXmark } from '@fortawesome/free-solid-svg-icons';
 	import Fa from 'svelte-fa';
 	import { scale } from 'svelte/transition';
 
-	let dismissed = false;
+	$: dismissed = $dissmissableContents?.discordBanner ?? false;
+
+	let show = false;
+	setTimeout(() => {
+		show = true;
+	}, 1000);
 </script>
 
-{#if !dismissed}
+{#if !dismissed && show}
 	<div transition:scale class="fixed bottom-0 inset-x-0 pb-2 sm:pb-5">
 		<div class="max-w-7xl mx-auto px-2 sm:px-6 lg:px-8">
 			<div class="p-2 rounded-lg bg-indigo-600 shadow-lg sm:p-3">
@@ -33,7 +39,9 @@
 					</div>
 					<div class="order-2 flex-shrink-0 sm:order-3 sm:ml-2">
 						<button
-							on:click={() => (dismissed = true)}
+							on:click={() => {
+								$dissmissableContents.discordBanner = true;
+							}}
 							type="button"
 							class="-mr-1 flex px-3 py-2 rounded-md hover:bg-indigo-500 focus:outline-none focus:ring-2 focus:ring-white"
 						>
