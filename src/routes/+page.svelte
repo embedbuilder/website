@@ -5,13 +5,13 @@
 	import DiscordBanner from '$lib/components/DiscordBanner.svelte';
 	import Embed from '$lib/components/Embed.svelte';
 	import FormInput from '$lib/components/FormInput.svelte';
+	import { socials } from '$lib/constants/Socials';
 	import EmbedExporter from '$lib/functions/EmbedExporter.js';
 	import { b64ToUtf8, generateUid, utf8ToB64 } from '$lib/functions/Utility.js';
 	import currentWebhook from '$lib/stores/WebhookData';
 	import currentEmbed from '$lib/stores/currentEmbed';
 	import settings from '$lib/stores/settings';
 	import type { AppEmbed } from '$lib/types';
-	import { faGithub } from '@fortawesome/free-brands-svg-icons';
 	import { faCopy } from '@fortawesome/free-solid-svg-icons';
 	import Fa from 'svelte-fa';
 
@@ -55,13 +55,20 @@
 	<div class="grid grid-cols-1 lg:grid-cols-2 pt-5 gap-x-8 gap-y-12 pb-10">
 		<div class=" animate__animated animate__backInLeft">
 			<div class="pl-5 pr-5 flex flex-col gap-y-8">
+				<div class="-mb-3 flex flex-row space-x-5">
+					{#each Object.entries(socials) as [id, social]}
+						<a href={social.url} target="_blank" title={social.name}>
+							<Fa
+								icon={social.icon}
+								class="text-gray-400 hover:opacity-75 duration-200 text-xl font-bold flex flex-row items-center"
+							/>
+						</a>
+					{/each}
+				</div>
 				<a
 					class="-mb-4 text-white hover:text-gray-400 duration-200 text-2xl font-bold flex flex-row items-center"
-					href="https://github.com/embedbuilder/website"
-					target="_blank"
-					rel="noreferer"
+					href="/"
 				>
-					<Fa icon={faGithub} class="mr-3" />
 					EmbedBuilder for Discord
 				</a>
 				<div class="-mb-2">
