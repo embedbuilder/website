@@ -127,7 +127,9 @@ export default class EmbedExporter {
 			lines.push(this.indent(1) + '})');
 		}
 		if (this.timestamp)
-			lines.push(this.indent(1) + `.setTimestamp(Date.parse(${this.formatString(this.timestamp)}))`);
+			lines.push(
+				this.indent(1) + `.setTimestamp(Date.parse(${this.formatString(this.timestamp)}))`
+			);
 		if (this.color)
 			lines.push(this.indent(1) + `.setColor(0x${this.cleanString(this.color).slice(1)})`);
 		lines[lines.length - 1] += ';';
