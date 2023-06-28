@@ -1,10 +1,11 @@
-import { faGithub, faTwitter } from '@fortawesome/free-brands-svg-icons';
+import { faGithub, faTwitter, faDiscord } from '@fortawesome/free-brands-svg-icons';
 import { faEnvelope, type IconDefinition } from '@fortawesome/free-solid-svg-icons';
 
 export enum Social {
 	Twitter = 'twitter',
 	Github = 'github',
-	Email = 'email'
+	Email = 'email',
+	Discord = 'discord'
 }
 
 export interface SocialData {
@@ -32,5 +33,11 @@ export const socials: Record<Social, SocialData> = {
 		url: 'mailto:support@embedbuilder.com',
 		icon: faEnvelope,
 		primaryColor: '#ffff00'
-	}
+	},
+	[Socials.Discord]: {
+		name: 'Discord',
+		url: 'https://discord.gg/AskvnXsYxd',
+		icon: faDiscord,
+		primaryColor: '#5865F2'
+	},
 };
