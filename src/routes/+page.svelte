@@ -352,10 +352,12 @@
 					<button
 						on:click={async () => {
 							if (!$currentWebhook.url) return alert('Please enter a webhook URL');
+							const expEmb = new EmbedExporter(embed).toDiscordJSON();
 							const result = await fetch($currentWebhook.url, {
 								method: 'POST',
 								body: JSON.stringify({
-									embeds: [new EmbedExporter(embed).toDiscordJSON()],
+									embeds: expEmb === '0' ? undefined : [expEmb],
+									content: $currentWebhook?.content ?? undefined,
 									username:
 										($currentWebhook?.username?.length ?? 0) > 0
 											? $currentWebhook?.username
