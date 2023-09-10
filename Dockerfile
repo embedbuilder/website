@@ -23,6 +23,7 @@ COPY --from=build /app/docker-entrypoint.sh /docker-entrypoint.sh
 
 EXPOSE 3000
 
-HEALTHCHECK --interval=30s --timeout=5s --retries=3 CMD curl -f http://localhost:3000/ || exit 1
+HEALTHCHECK --interval=5s --timeout=5s --retries=3 \
+    CMD wget -nv -t1 --spider 'http://localhost:3000/' || exit 1
 
 ENTRYPOINT [ "sh", "/docker-entrypoint.sh" ]

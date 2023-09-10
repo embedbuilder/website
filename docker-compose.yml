@@ -10,6 +10,8 @@ services:
       - 3000:3000
     environment:
       - DATABASE_URL=postgresql://embedbuilder:embedbuilder@postgres:5432/embedbuilder?schema=public
+    labels:
+      - 'com.centurylinklabs.watchtower.scope=embedbuilder-frontend'
   postgres:
     image: postgres:15.2
     restart: unless-stopped
@@ -26,6 +28,15 @@ services:
       interval: 3s
       timeout: 3s
       retries: 15
+  watchtower:
+    image: containrrr/watchtower
+    restart: unless-stopped
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /root/.docker/config.json:/config.json
+    command: --interval 180 --cleanup --scope embedbuilder-frontend
+    labels:
+      - 'com.centurylinklabs.watchtower.scope=embedbuilder-frontend'
 
 networks:
   embedbuilder:
