@@ -1,4 +1,4 @@
-import { faGithub, faTwitter, faDiscord } from '@fortawesome/free-brands-svg-icons';
+import { faDiscord, faGithub, faTwitter } from '@fortawesome/free-brands-svg-icons';
 import { faEnvelope, type IconDefinition } from '@fortawesome/free-solid-svg-icons';
 
 export enum Social {
@@ -34,7 +34,7 @@ export const socials: Record<Social, SocialData> = {
 		icon: faEnvelope,
 		primaryColor: '#ffff00'
 	},
-	[Socials.Discord]: {
+	[Social.Discord]: {
 		name: 'Discord',
 		url: 'https://discord.gg/AskvnXsYxd',
 		icon: faDiscord,

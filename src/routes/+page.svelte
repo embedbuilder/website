@@ -56,7 +56,7 @@
 		<div class=" animate__animated animate__backInLeft">
 			<div class="pl-5 pr-5 flex flex-col gap-y-8">
 				<div class="-mb-3 flex flex-row space-x-5">
-					{#each Object.entries(socials) as [id, social]}
+					{#each Object.values(socials) as social}
 						<a href={social.url} target="_blank" title={social.name}>
 							<Fa
 								icon={social.icon}
@@ -356,7 +356,7 @@
 							const result = await fetch($currentWebhook.url, {
 								method: 'POST',
 								body: JSON.stringify({
-									embeds: expEmb === '0' ? undefined : [expEmb],
+									embeds: !Object.keys(expEmb)?.length ? undefined : [expEmb],
 									content: $currentWebhook?.content ?? undefined,
 									username:
 										($currentWebhook?.username?.length ?? 0) > 0
@@ -365,10 +365,6 @@
 									avatar_url:
 										($currentWebhook?.avatarUrl?.length ?? 0) > 0
 											? $currentWebhook?.avatarUrl
-											: undefined,
-									content:
-										($currentWebhook?.content?.length ?? 0) > 0
-											? $currentWebhook?.content
 											: undefined
 								}),
 								headers: {
@@ -385,10 +381,10 @@
 						id="firewebhook"
 						disabled={!(
 							WEBHOOK_URL_REGEX.test($currentWebhook?.url ?? '') &&
-							Object.entries(embed).filter(
+							(Object.entries(embed).filter(
 								([k, v]) =>
 									['authorName', 'title', 'description', 'fields'].includes(k) && v.length > 0
-							).length > 0
+							).length > 0 || ($currentWebhook?.content?.length ?? 0) > 0)
 						)}
 						class="discord-btn btn-success w-full lg:w-1/3 mt-2 !py-2">Send Now</button
 					>
